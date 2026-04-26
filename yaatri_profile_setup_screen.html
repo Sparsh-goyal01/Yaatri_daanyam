@@ -1,0 +1,256 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YAATRI - Profile Setup</title>
+  <link rel="stylesheet" href="assets/css/app.css">
+  <style>
+    .section-divider { height: 0.5px; background: rgba(127,119,221,0.12); margin: 18px 0; }
+    .phone-row { display: flex; gap: 8px; }
+    .country-code { background: rgba(127,119,221,0.1); border: 0.5px solid rgba(127,119,221,0.25); border-radius: 10px; padding: 11px 12px; font-size: 13px; color: #c8b8ff; white-space: nowrap; display: flex; align-items: center; gap: 5px; }
+    .step-sub { text-align: center; font-size: 10px; color: rgba(234,232,255,0.3); margin-top: 4px; }
+    .senior-notice { margin-top: 10px; background: rgba(93,202,165,0.08); border: 0.5px solid rgba(93,202,165,0.25); border-radius: 9px; padding: 9px 12px; display: flex; align-items: flex-start; gap: 8px; }
+    .sn-icon { width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px; }
+    .sn-text { font-size: 11px; color: rgba(93,202,165,0.8); line-height: 1.5; }
+    .cs-dot { width: 6px; height: 6px; border-radius: 50%; background: #c8a855; flex-shrink: 0; }
+    .cs-text { font-size: 11px; color: rgba(200,168,85,0.85); }
+    .cs-val { color: #c8a855; font-weight: 500; }
+  </style>
+</head>
+<body>
+<main class="app-shell">
+  <section class="stage">
+    <aside class="stage-panel" aria-hidden="true">
+      <h2>Profile Context</h2>
+      <p>This step keeps traveller details consistent across the rest of the journey planning flow and feeds concierge recommendations.</p>
+    </aside>
+
+    <div class="frame">
+
+  <div class="statusbar">
+    <span class="sbt">9:41</span>
+    <div class="sbi">
+      <svg width="16" height="11" viewBox="0 0 16 11" fill="none">
+        <rect x="0" y="3.5" width="3" height="7.5" rx="0.5" fill="#EAE8FF" opacity="0.4"/>
+        <rect x="4.5" y="2" width="3" height="9" rx="0.5" fill="#EAE8FF" opacity="0.65"/>
+        <rect x="9" y="0.5" width="3" height="10.5" rx="0.5" fill="#EAE8FF" opacity="0.9"/>
+        <rect x="13.5" y="0" width="2.5" height="11" rx="0.5" fill="#EAE8FF"/>
+      </svg>
+      <svg width="24" height="11" viewBox="0 0 24 11" fill="none">
+        <rect x="0.5" y="0.5" width="20" height="10" rx="2.5" stroke="#EAE8FF" stroke-opacity="0.35"/>
+        <rect x="2" y="2" width="15" height="7" rx="1.5" fill="#EAE8FF"/>
+        <path d="M22 3.5V7.5C22.8 7.2 23 6.7 23 5.5S22.8 3.8 22 3.5Z" fill="#EAE8FF" opacity="0.4"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="topbar">
+    <button class="icon-btn" type="button" data-nav="back" aria-label="Go back">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7L9 11" stroke="#C8B8FF" stroke-width="1.1" stroke-linecap="round"/></svg>
+    </button>
+    <div class="step-pill">Step 2 of 4</div>
+    <button class="ghost-btn" type="button" data-nav="skip">Skip</button>
+  </div>
+
+  <div class="progress-row">
+    <div class="prog-seg prog-done"></div>
+    <div class="prog-seg prog-active"></div>
+    <div class="prog-seg prog-empty"></div>
+    <div class="prog-seg prog-empty"></div>
+  </div>
+
+  <div class="context-strip">
+    <div class="cs-dot"></div>
+    <div class="cs-text">Planning for: <span class="cs-val">Darshan &amp; devotion</span></div>
+  </div>
+
+  <div class="hero-band">
+    <div class="eyebrow">
+      <div class="eyebrow-line"></div>
+      <span class="eyebrow-text">Who's travelling?</span>
+    </div>
+    <h1 class="hero-h1 serif">Help us care for<br>your <em>party</em> well.</h1>
+    <p class="hero-sub">So your concierge can arrange the right rooms, rituals, and support.</p>
+  </div>
+
+  <div class="form-area">
+
+    <div class="field">
+      <div class="field-label">Your name <span class="req">*</span></div>
+      <input class="field-input" placeholder="Rajiv Sharma" value="Rajiv Sharma"/>
+    </div>
+
+    <div class="field">
+      <div class="field-label">WhatsApp number <span class="req">*</span></div>
+      <div class="phone-row">
+        <div class="country-code">
+          <span class="cc-flag">🇮🇳</span>
+          <span style="font-size:13px;color:#C8B8FF">+91</span>
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6.5L7.5 3.5" stroke="#7B74A8" stroke-width="1" stroke-linecap="round"/></svg>
+        </div>
+        <input id="phone-input" class="field-input" style="flex:1" placeholder="98765 43210" value="98765 43210"/>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <div class="field">
+      <div class="field-label">Group size <span class="req">*</span></div>
+      <div class="stepper-row">
+        <button class="step-btn" type="button" onclick="adj(-1)">−</button>
+        <div>
+          <div class="step-val" id="grp-val">3</div>
+          <div class="step-sub">travellers</div>
+        </div>
+        <button class="step-btn" type="button" onclick="adj(1)">+</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">Senior traveller (60+)? <span class="req">*</span></div>
+      <div class="toggle-row">
+        <button class="toggle-opt on-yes" id="tog-yes" type="button" onclick="setSenior(true)">
+          Yes, in our group
+        </button>
+        <button class="toggle-opt" id="tog-no" type="button" onclick="setSenior(false)">
+          No seniors
+        </button>
+      </div>
+      <div class="senior-notice" id="senior-notice">
+        <svg class="sn-icon" viewBox="0 0 14 14" fill="none">
+          <circle cx="7" cy="7" r="6" stroke="#5DCAA5" stroke-width="0.8"/>
+          <path d="M7 4V7.5M7 9.5V10" stroke="#5DCAA5" stroke-width="1" stroke-linecap="round"/>
+        </svg>
+        <div class="sn-text">Senior Mode will be enabled. We'll arrange ground-floor rooms, wheelchair support, and priority darshan slots.</div>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <div class="field">
+      <div class="field-label">Mobility needs</div>
+      <div class="chip-wrap">
+        <button class="chip on" id="mob-none" type="button" onclick="toggleChip('mob','mob-none')">None needed</button>
+        <button class="chip" id="mob-wheel" type="button" onclick="toggleChip('mob','mob-wheel')">Wheelchair</button>
+        <button class="chip" id="mob-palki" type="button" onclick="toggleChip('mob','mob-palki')">Palki / doli</button>
+        <button class="chip" id="mob-elev" type="button" onclick="toggleChip('mob','mob-elev')">Elevator room</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="field-label">Dietary preference</div>
+      <div class="chip-wrap">
+        <button class="chip on-teal" id="diet-satvik" type="button" onclick="toggleDiet('diet-satvik')">Satvik</button>
+        <button class="chip" id="diet-jain" type="button" onclick="toggleDiet('diet-jain')">Jain</button>
+        <button class="chip" id="diet-nog" type="button" onclick="toggleDiet('diet-nog')">No onion-garlic</button>
+        <button class="chip" id="diet-any" type="button" onclick="toggleDiet('diet-any')">No preference</button>
+      </div>
+    </div>
+
+    <div style="height:72px"></div>
+  </div>
+
+  <div class="bottom-bar">
+    <button class="cta-btn" type="button" data-nav="next" id="profile-continue">Continue →</button>
+  </div>
+
+</div>
+
+  </section>
+</main>
+
+<script src="assets/js/app.js"></script>
+<script>
+  const pageState = window.YaatriApp.loadState();
+  let grp = pageState.groupSize || 3;
+  let senior = typeof pageState.senior === 'boolean' ? pageState.senior : true;
+  const mobActive = new Set(pageState.mobility || ['mob-none']);
+  const dietActive = new Set(pageState.diet || ['diet-satvik']);
+  const nameInput = document.querySelector('input[placeholder="Rajiv Sharma"]');
+  const phoneInput = document.getElementById('phone-input');
+
+  nameInput.value = pageState.profile && pageState.profile.name ? pageState.profile.name : 'Rajiv Sharma';
+  phoneInput.value = pageState.profile && pageState.profile.phone ? pageState.profile.phone : '98765 43210';
+  document.getElementById('grp-val').textContent = grp;
+
+  function adj(d) {
+    grp = Math.max(1, Math.min(8, grp + d));
+    document.getElementById('grp-val').textContent = grp;
+    window.YaatriApp.saveState({ groupSize: grp });
+  }
+
+  function setSenior(val) {
+    senior = val;
+    const yes = document.getElementById('tog-yes');
+    const no  = document.getElementById('tog-no');
+    const notice = document.getElementById('senior-notice');
+    if (val) {
+      yes.className = 'toggle-opt on-yes';
+      no.className  = 'toggle-opt';
+      notice.style.display = 'flex';
+    } else {
+      yes.className = 'toggle-opt';
+      no.className  = 'toggle-opt on-no';
+      notice.style.display = 'none';
+    }
+    window.YaatriApp.saveState({ senior: senior });
+  }
+
+  function toggleChip(group, id) {
+    if (id === 'mob-none') {
+      mobActive.clear();
+      mobActive.add('mob-none');
+    } else {
+      mobActive.delete('mob-none');
+      if (mobActive.has(id)) mobActive.delete(id);
+      else mobActive.add(id);
+      if (mobActive.size === 0) mobActive.add('mob-none');
+    }
+    ['mob-none','mob-wheel','mob-palki','mob-elev'].forEach(c => {
+      document.getElementById(c).className = 'chip' + (mobActive.has(c) ? ' on' : '');
+    });
+    window.YaatriApp.saveState({ mobility: Array.from(mobActive) });
+  }
+
+  function toggleDiet(id) {
+    if (id === 'diet-any') {
+      dietActive.clear();
+      dietActive.add('diet-any');
+    } else {
+      dietActive.delete('diet-any');
+      if (dietActive.has(id)) dietActive.delete(id);
+      else dietActive.add(id);
+      if (dietActive.size === 0) dietActive.add('diet-any');
+    }
+    ['diet-satvik','diet-jain','diet-nog','diet-any'].forEach(c => {
+      document.getElementById(c).className = 'chip' + (dietActive.has(c) ? ' on-teal' : '');
+    });
+    window.YaatriApp.saveState({ diet: Array.from(dietActive) });
+  }
+
+  // Initialize UI from shared state.
+  setSenior(senior);
+  ['mob-none','mob-wheel','mob-palki','mob-elev'].forEach(c => {
+    document.getElementById(c).className = 'chip' + (mobActive.has(c) ? ' on' : '');
+  });
+  ['diet-satvik','diet-jain','diet-nog','diet-any'].forEach(c => {
+    document.getElementById(c).className = 'chip' + (dietActive.has(c) ? ' on-teal' : '');
+  });
+
+  document.getElementById('profile-continue').addEventListener('click', function () {
+    window.YaatriApp.saveState({
+      groupSize: grp,
+      senior: senior,
+      mobility: Array.from(mobActive),
+      diet: Array.from(dietActive),
+      profile: {
+        name: nameInput.value,
+        phone: phoneInput.value
+      }
+    });
+  });
+</script>
+ </body>
+ </html>

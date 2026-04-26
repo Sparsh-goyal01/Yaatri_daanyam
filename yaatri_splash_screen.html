@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YAATRI - Splash</title>
+  <link rel="stylesheet" href="assets/css/app.css">
+  <style>
+    .splash-frame {
+      align-items: center;
+      justify-content: space-between;
+      padding: 56px 32px 44px;
+    }
+
+    .center-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 2;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .logo-ring {
+      width: 82px;
+      height: 82px;
+      margin-bottom: 24px;
+    }
+
+    .wordmark {
+      font-size: 28px;
+      font-weight: 300;
+      letter-spacing: 0.22em;
+      margin-bottom: 6px;
+    }
+
+    .tagline-text {
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      color: #7b74a8;
+      margin-top: 4px;
+      font-style: italic;
+    }
+
+    .bottom-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      z-index: 2;
+    }
+
+    .loader-track {
+      width: 52px;
+      height: 2px;
+      background: rgba(127, 119, 221, 0.2);
+      border-radius: 1px;
+      overflow: hidden;
+    }
+
+    .loader-fill {
+      height: 100%;
+      background: #534ab7;
+      border-radius: 1px;
+      animation: load 2.2s ease forwards;
+    }
+
+    .version {
+      font-size: 11px;
+      color: rgba(123, 116, 168, 0.48);
+      letter-spacing: 0.08em;
+    }
+
+    @keyframes load {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <section class="stage">
+      <aside class="stage-panel" aria-hidden="true">
+        <h2>YAATRI</h2>
+        <p>Spiritual concierge planning with smooth, step-wise guidance from sankalp to final itinerary.</p>
+      </aside>
+
+      <div class="frame splash-frame">
+        <div class="statusbar">
+          <span class="sbt">9:41</span>
+          <div class="sbi" aria-hidden="true">
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="4" width="3" height="8" rx="0.5" fill="#EAE8FF" opacity="0.4"></rect><rect x="4.5" y="2.5" width="3" height="9.5" rx="0.5" fill="#EAE8FF" opacity="0.6"></rect><rect x="9" y="0.5" width="3" height="11.5" rx="0.5" fill="#EAE8FF" opacity="0.9"></rect><rect x="13.5" y="0" width="2.5" height="12" rx="0.5" fill="#EAE8FF"></rect></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 2C10.8 2 13.3 3.2 15 5.1L13.5 6.6C12.2 5.1 10.2 4.2 8 4.2S3.8 5.1 2.5 6.6L1 5.1C2.7 3.2 5.2 2 8 2Z" fill="#EAE8FF" opacity="0.5"></path><path d="M8 5.5C9.8 5.5 11.4 6.2 12.6 7.4L11.1 8.9C10.3 8.1 9.2 7.6 8 7.6S5.7 8.1 4.9 8.9L3.4 7.4C4.6 6.2 6.2 5.5 8 5.5Z" fill="#EAE8FF" opacity="0.75"></path><circle cx="8" cy="11" r="1.5" fill="#EAE8FF"></circle></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3" stroke="#EAE8FF" stroke-opacity="0.4"></rect><rect x="2" y="2" width="16" height="8" rx="1.5" fill="#EAE8FF"></rect><path d="M23 4.5V7.5C23.8 7.2 24 6.8 24 6S23.8 4.8 23 4.5Z" fill="#EAE8FF" opacity="0.4"></path></svg>
+          </div>
+        </div>
+
+        <div class="mandala-wrap" aria-hidden="true">
+          <svg width="300" height="300" viewBox="0 0 300 300" fill="none" opacity="0.06">
+            <circle cx="150" cy="150" r="130" stroke="white" stroke-width="0.8"></circle>
+            <circle cx="150" cy="150" r="100" stroke="white" stroke-width="0.5"></circle>
+            <circle cx="150" cy="150" r="70" stroke="white" stroke-width="0.8"></circle>
+            <circle cx="150" cy="150" r="40" stroke="white" stroke-width="0.5"></circle>
+            <circle cx="150" cy="150" r="14" stroke="white" stroke-width="0.8"></circle>
+          </svg>
+        </div>
+
+        <div class="center-content">
+          <svg class="logo-ring" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+            <circle cx="40" cy="40" r="12" stroke="#C8B8FF" stroke-width="1"></circle>
+            <circle cx="40" cy="40" r="4" fill="#C8B8FF"></circle>
+            <circle cx="40" cy="40" r="8" fill="#534AB7" opacity="0.3"></circle>
+            <path d="M40 18 Q54 29 54 40 Q54 51 40 62 Q26 51 26 40 Q26 29 40 18Z" stroke="#7F77DD" stroke-width="1"></path>
+          </svg>
+
+          <div class="wordmark">YAATRI</div>
+          <div class="tagline-text serif">Yatra begins within.</div>
+        </div>
+
+        <div class="bottom-section">
+          <div class="loader-track"><div class="loader-fill"></div></div>
+          <div class="version">v1.0 · spiritual concierge</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/app.js"></script>
+  <script>
+    window.setTimeout(function () {
+      window.YaatriApp.gotoNextPage();
+    }, 2300);
+  </script>
+</body>
+</html>
