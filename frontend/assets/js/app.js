@@ -10,11 +10,11 @@
   };
 
   const flow = [
-    'yaatri_splash_screen.html',
-    'yaatri_welcome_intention_v2.html',
-    'yaatri_profile_setup_screen.html',
-    'yaatri_language_selection_screen.html',
-    'yaatri_trip_planner_wizard.html'
+    'yaatri_splash_screen',
+    'yaatri_welcome_intention_v2',
+    'yaatri_profile_setup_screen',
+    'yaatri_language_selection_screen',
+    'yaatri_trip_planner_wizard'
   ];
 
   function defaultState() {
