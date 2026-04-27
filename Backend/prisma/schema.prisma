@@ -1,0 +1,136 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ============ MASTER DATA (Static - Seed Once) ============
+
+model Sankalp {
+  id          Int       @id @default(autoincrement())
+  title       String    @unique
+  description String
+  category    String    // "devotion", "ancestral", "mannat", "spiritual", "festival", "char_dham"
+  icon        String?   // Icon identifier or SVG name
+  
+  circuits    Circuit[]
+  bookings    Booking[]
+  
+  @@index([category])
+}
+
+model Circuit {
+  id              Int       @id @default(autoincrement())
+  name            String    @unique
+  description     String?
+  
+  // Data from design
+  stops           String[]  // ["Varanasi", "Allahabad", "Triveni Sangam"]
+  defaultDays     Int       // Duration in days
+  basePrice       Float     // Price per person in INR
+  highlights      String[]  // ["Ganga Aarti", "Triveni Sangam", "Kaal Bhairav"]
+  
+  // Relationship
+  sankalp         Sankalp   @relation(fields: [sankalpId], references: [id], onDelete: Cascade)
+  sankalpId       Int
+  
+  muhurats        Muhurat[]
+  bookings        Booking[]
+  
+  @@index([sankalpId])
+}
+
+model Muhurat {
+  id              Int       @id @default(autoincrement())
+  
+  // Dates
+  startDate       DateTime
+  endDate         DateTime
+  
+  // Astrological data (pre-calculated)
+  tithi           String?   // "Jyeshtha Shukla Panchami"
+  significance    String    // "Best" | "Good" | "Average"
+  reason          String?   // "Ascendant is strong, minimal dosha"
+  
+  // Relationship
+  circuit         Circuit   @relation(fields: [circuitId], references: [id], onDelete: Cascade)
+  circuitId       Int
+  
+  bookings        Booking[]
+  
+  @@index([circuitId])
+  @@index([startDate])
+}
+
+// ============ USER DATA (Dynamic - User Bookings) ============
+
+model Booking {
+  id                      Int       @id @default(autoincrement())
+  
+  // === STEP 1: SANKALP ===
+  sankalp                 Sankalp   @relation(fields: [sankalpId], references: [id])
+  sankalpId               Int
+  customSankalp          String?   // If user wrote their own intention
+  
+  // === STEP 2: CIRCUIT ===
+  circuit                 Circuit   @relation(fields: [circuitId], references: [id])
+  circuitId               Int
+  
+  // === STEP 3: MUHURAT ===
+  muhurat                 Muhurat   @relation(fields: [muhuratId], references: [id])
+  muhuratId               Int
+  startDate               DateTime  // Selected date range
+  endDate                 DateTime
+  
+  // === STEP 4: TRAVELLERS ===
+  groupSize               Int       // 1-8 people
+  hasSenior              Boolean   // 60+ in group
+  mobilityNeeds          String[]  // ["Wheelchair", "Palki", "Elevator", "None"]
+  dietaryPreference      String    // "Satvik", "Jain", "No onion-garlic", "No preference"
+  specialRequests        String?   // User's custom text
+  
+  // === STEP 5: PRICING ===
+  estimatedPrice         Float     // circuit.basePrice × groupSize
+  finalPrice             Float?    // Set by Meera after confirmation
+  
+  // === STATUS & WORKFLOW ===
+  status                 String    @default("pending") // "pending" | "confirmed" | "paid" | "cancelled"
+  
+  // === USER CONTACT ===
+  userEmail              String
+  userPhone              String?
+  
+  // === CONTEXT ===
+  userContext            String?   // "Planning for mother's 70th birthday..."
+  language               String    @default("bi") // "en" | "hi" | "bi"
+  
+  // === MEERA (CONCIERGE) ===
+  conciergeNotes         String?   // Meera's internal notes
+  whatsappLink           String?   // Direct WhatsApp chat link
+  
+  // === TIMESTAMPS ===
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  
+  @@index([userEmail])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ============ OPTIONAL: USER ACCOUNTS (Future Auth) ============
+
+model User {
+  id              Int       @id @default(autoincrement())
+  email           String    @unique
+  password        String?   // Hashed (if auth added)
+  name            String?
+  phone           String?
+  
+  preferredLanguage String  @default("bi")
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}

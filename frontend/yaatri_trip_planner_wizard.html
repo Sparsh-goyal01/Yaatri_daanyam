@@ -120,37 +120,9 @@
               <p class="hero-sub">Circuits matched to your sankalp. All verified, all concierge-supported.</p>
             </div>
 
-            <div style="background:rgba(200,168,85,0.08);border:0.5px solid rgba(200,168,85,0.2);border-radius:9px;padding:8px 11px;font-size:10px;color:#C8A855;margin-bottom:12px;">Recommended for Darshan &amp; devotion</div>
-
-            <button class="circ-card sel" type="button" data-circuit="Kashi-Prayagraj">
-              <div class="circ-swatch" style="background:linear-gradient(180deg,#1A1630,#534AB7)"></div>
-              <div class="circ-body">
-                <div class="circ-name">Kashi-Prayagraj</div>
-                <div class="circ-stops">Kashi Vishwanath - Ganga Aarti - Triveni Sangam</div>
-                <div class="circ-foot"><span class="circ-price">Rs32,000+</span><span class="circ-nights">7-9 nights</span></div>
-              </div>
-              <div class="circ-check"></div>
-            </button>
-
-            <button class="circ-card" type="button" data-circuit="Vaishno Devi">
-              <div class="circ-swatch" style="background:linear-gradient(180deg,#0E1A14,#1D9E75)"></div>
-              <div class="circ-body">
-                <div class="circ-name">Vaishno Devi</div>
-                <div class="circ-stops">Bhavan - Ardh Kuwari - Bhairav Mandir</div>
-                <div class="circ-foot"><span class="circ-price">Rs18,000+</span><span class="circ-nights">3-5 nights</span></div>
-              </div>
-              <div class="circ-check"></div>
-            </button>
-
-            <button class="circ-card" type="button" data-circuit="Ujjain-Omkareshwar">
-              <div class="circ-swatch" style="background:linear-gradient(180deg,#1A0E2A,#9B6ABB)"></div>
-              <div class="circ-body">
-                <div class="circ-name">Ujjain-Omkareshwar</div>
-                <div class="circ-stops">Mahakaleshwar - Omkareshwar Jyotirlinga</div>
-                <div class="circ-foot"><span class="circ-price">Rs14,000+</span><span class="circ-nights">4-6 nights</span></div>
-              </div>
-              <div class="circ-check"></div>
-            </button>
+            <div id="circuit-hint" style="background:rgba(200,168,85,0.08);border:0.5px solid rgba(200,168,85,0.2);border-radius:9px;padding:8px 11px;font-size:10px;color:#C8A855;margin-bottom:12px;">Recommended for your selected intention</div>
+            <div id="circuit-status" style="font-size:10px;color:rgba(123,116,168,0.55);margin-bottom:10px;"></div>
+            <div id="circuit-list"></div>
           </section>
 
           <section class="wizard-step" data-step="2">
@@ -160,20 +132,8 @@
               <p class="hero-sub">Panchang-aligned departure windows for your selected circuit.</p>
             </div>
 
-            <button class="muh-card best sel-best" type="button" data-muhurat="May 12-18, 2025">
-              <div class="muh-top"><div><div class="muh-date">May 12 - 18, 2025</div><div class="muh-tithi">Jyeshtha Shukla Panchami to Ekadashi</div></div><span class="badge badge-best">Best</span></div>
-              <div class="muh-reason">Especially auspicious for darshan yatras.</div>
-            </button>
-
-            <button class="muh-card good" type="button" data-muhurat="May 28-Jun 3, 2025">
-              <div class="muh-top"><div><div class="muh-date">May 28 - Jun 3, 2025</div><div class="muh-tithi">Ashadha Krishna Tritiya</div></div><span class="badge badge-good">Good</span></div>
-              <div class="muh-reason">Suitable for Kashi yatra.</div>
-            </button>
-
-            <button class="muh-card avg" type="button" data-muhurat="Jun 14-20, 2025">
-              <div class="muh-top"><div><div class="muh-date">Jun 14 - 20, 2025</div><div class="muh-tithi">Ashadha Shukla Saptami</div></div><span class="badge badge-avg">Average</span></div>
-              <div class="muh-reason">Acceptable window, check weather.</div>
-            </button>
+            <div id="muhurat-status" style="font-size:10px;color:rgba(123,116,168,0.55);margin-bottom:10px;"></div>
+            <div id="muhurat-list"></div>
           </section>
 
           <section class="wizard-step" data-step="3">
@@ -220,7 +180,7 @@
 
             <div class="total-row">
               <div><div class="total-label">Estimated starting from</div><div style="font-size:10px;color:rgba(123,116,168,0.5);margin-top:2px">Final price confirmed by Meera</div></div>
-              <div class="total-val">Rs32,000</div>
+              <div class="total-val" id="rv-total">Rs32,000</div>
             </div>
           </section>
         </div>
@@ -228,69 +188,398 @@
         <div class="bbar">
           <button class="cta" id="wizard-cta" type="button">Continue -&gt;</button>
           <div class="cta-sub" id="wizard-sub">No payment required yet. Plan first, pay later.</div>
+          <div id="wizard-error" style="display:none;text-align:center;font-size:10px;color:#d96b6b;margin-top:8px;"></div>
         </div>
       </div>
     </section>
   </main>
 
+  <script src="assets/js/config.js"></script>
   <script src="assets/js/app.js"></script>
   <script>
     const appState = window.YaatriApp.loadState();
     const steps = Array.from(document.querySelectorAll('.wizard-step'));
     const stepNames = ['Sankalp', 'Circuit', 'Muhurat', 'Travellers', 'Review'];
     const wizardProgress = document.getElementById('wizard-progress');
-    let currentStep = 0;
+    const ctaButton = document.getElementById('wizard-cta');
+    const wizardError = document.getElementById('wizard-error');
+
+    const state = {
+      currentStep: 0,
+      submitting: false,
+      sankalps: [],
+      circuits: [],
+      muhurats: [],
+      groupSize: appState.groupSize || 3,
+      senior: typeof appState.senior === 'boolean' ? appState.senior : true,
+      mobility: new Set(appState.mobility || ['mob-none'])
+    };
+
+    const mobilityLabels = {
+      'mob-none': 'None needed',
+      'mob-wheel': 'Wheelchair',
+      'mob-palki': 'Palki / doli',
+      'mob-elev': 'Lift support'
+    };
+
+    const dietLabels = {
+      'diet-satvik': 'Satvik',
+      'diet-jain': 'Jain',
+      'diet-nog': 'No onion / garlic',
+      'diet-any': 'No specific preference'
+    };
+
+    function setWizardError(message) {
+      wizardError.style.display = message ? 'block' : 'none';
+      wizardError.textContent = message || '';
+    }
+
+    function setInlineStatus(id, text, isError) {
+      const target = document.getElementById(id);
+      target.textContent = text || '';
+      target.style.color = isError ? '#d96b6b' : 'rgba(123,116,168,0.55)';
+    }
+
+    function formatDateRange(startDate, endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      return start.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) + ' - ' +
+        end.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function formatRupees(value) {
+      return 'Rs' + Number(value || 0).toLocaleString('en-IN');
+    }
+
+    function slugify(text) {
+      return String(text || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    }
+
+    function normalizeSignificance(value) {
+      const s = String(value || '').toLowerCase();
+      if (s === 'best') {
+        return 'best';
+      }
+      if (s === 'good') {
+        return 'good';
+      }
+      return 'avg';
+    }
 
     function renderProgress() {
       wizardProgress.innerHTML = '';
       steps.forEach(function (_, idx) {
         const seg = document.createElement('div');
-        seg.className = 'prog-seg' + (idx < currentStep ? ' prog-done' : idx === currentStep ? ' prog-active' : '');
+        seg.className = 'prog-seg' + (idx < state.currentStep ? ' prog-done' : idx === state.currentStep ? ' prog-active' : '');
         wizardProgress.appendChild(seg);
       });
-      document.getElementById('wiz-pill').textContent = 'Step ' + (currentStep + 1) + ' of 5';
-      document.getElementById('wizard-step-label').textContent = 'Step ' + (currentStep + 1) + ' - ' + stepNames[currentStep];
-      document.getElementById('wiz-back').style.visibility = currentStep === 0 ? 'hidden' : 'visible';
-      document.getElementById('wiz-skip').style.visibility = currentStep >= steps.length - 1 ? 'hidden' : 'visible';
-      document.getElementById('wizard-cta').textContent = currentStep === steps.length - 1 ? 'Send to Meera ->' : 'Continue ->';
-      document.getElementById('wizard-sub').style.visibility = currentStep === steps.length - 1 ? 'visible' : 'hidden';
+      document.getElementById('wiz-pill').textContent = 'Step ' + (state.currentStep + 1) + ' of 5';
+      document.getElementById('wizard-step-label').textContent = 'Step ' + (state.currentStep + 1) + ' - ' + stepNames[state.currentStep];
+      document.getElementById('wiz-back').style.visibility = state.currentStep === 0 ? 'hidden' : 'visible';
+      document.getElementById('wiz-skip').style.visibility = state.currentStep >= steps.length - 1 ? 'hidden' : 'visible';
+      ctaButton.textContent = state.currentStep === steps.length - 1 ? 'Send to Meera ->' : 'Continue ->';
+      document.getElementById('wizard-sub').style.visibility = state.currentStep === steps.length - 1 ? 'visible' : 'hidden';
     }
 
     function showStep(stepIndex) {
-      currentStep = Math.max(0, Math.min(steps.length - 1, stepIndex));
+      state.currentStep = Math.max(0, Math.min(steps.length - 1, stepIndex));
       steps.forEach(function (section, idx) {
-        section.classList.toggle('active', idx === currentStep);
+        section.classList.toggle('active', idx === state.currentStep);
       });
       renderProgress();
-      if (currentStep === 4) {
+      if (state.currentStep === 4) {
         refreshReview();
       }
     }
 
-    function refreshReview() {
-      const s = window.YaatriApp.loadState();
-      const intentionMap = {
-        c1: 'Ancestral rites',
-        c2: 'Darshan & devotion',
-        c3: 'Mannat & fulfilment',
-        c4: 'Spiritual seeking',
-        c5: 'Festival & Kumbh',
-        c6: 'Char Dham Yatra'
-      };
-      document.getElementById('rv-intention').textContent = intentionMap[s.selectedIntention] || 'Darshan & devotion';
-      document.getElementById('rv-circuit').textContent = s.selectedCircuit || 'Kashi-Prayagraj';
-      document.getElementById('rv-muhurat').textContent = s.selectedMuhurat || 'May 12-18, 2025';
-      document.getElementById('rv-travellers').textContent = (s.groupSize || 3) + ' pilgrims';
+    function getSelectedSankalpMeta() {
+      if (appState.selectedSankalpId && state.sankalps.length) {
+        const found = state.sankalps.find(function (item) { return item.id === appState.selectedSankalpId; });
+        if (found) {
+          return found;
+        }
+      }
+      return window.YaatriApp.getSankalpMetaByCode(appState.selectedIntention);
     }
 
-    document.getElementById('wiz-back').addEventListener('click', function () { showStep(currentStep - 1); });
-    document.getElementById('wiz-skip').addEventListener('click', function () { showStep(currentStep + 1); });
-    document.getElementById('wizard-cta').addEventListener('click', function () {
-      if (currentStep < steps.length - 1) {
-        showStep(currentStep + 1);
-      } else {
-        this.textContent = 'Plan sent to Meera';
-        this.disabled = true;
+    function refreshReview() {
+      const s = window.YaatriApp.loadState();
+      const sankalpMeta = getSelectedSankalpMeta();
+      const selectedDietCode = Array.isArray(s.diet) && s.diet.length ? s.diet[0] : 'diet-satvik';
+      document.getElementById('rv-intention').textContent = sankalpMeta.title || 'Darshan & devotion';
+      document.querySelector('.rv-sub').textContent = (s.duration || '5-7 days') + ' - ' + (s.budget || 'Rs15k-30k') + '/person';
+      document.getElementById('rv-circuit').textContent = s.selectedCircuit || 'Pending selection';
+      document.getElementById('rv-muhurat').textContent = s.selectedMuhurat || 'Pending selection';
+      document.getElementById('rv-travellers').textContent = (s.groupSize || 3) + ' pilgrims';
+
+      const selectedCircuit = state.circuits.find(function (c) { return c.id === s.selectedCircuitId; });
+      const total = selectedCircuit ? selectedCircuit.basePrice * (s.groupSize || 1) : 0;
+      document.getElementById('rv-total').textContent = total ? formatRupees(total) : 'Pending';
+
+      window.YaatriApp.saveState({ dietaryPreferenceLabel: dietLabels[selectedDietCode] || 'Satvik' });
+    }
+
+    function renderCircuits() {
+      const circuitList = document.getElementById('circuit-list');
+      const selectedId = window.YaatriApp.loadState().selectedCircuitId;
+      if (!state.circuits.length) {
+        circuitList.innerHTML = '';
+        setInlineStatus('circuit-status', 'No circuits available for this sankalp right now.', false);
+        return;
+      }
+
+      setInlineStatus('circuit-status', '', false);
+      circuitList.innerHTML = state.circuits.map(function (circuit, idx) {
+        const selected = selectedId === circuit.id;
+        const stopsText = Array.isArray(circuit.stops) ? circuit.stops.join(' - ') : '';
+        const swatches = [
+          'linear-gradient(180deg,#1A1630,#534AB7)',
+          'linear-gradient(180deg,#0E1A14,#1D9E75)',
+          'linear-gradient(180deg,#1A0E2A,#9B6ABB)',
+          'linear-gradient(180deg,#2A160E,#C8A855)'
+        ];
+        return '<button class="circ-card' + (selected ? ' sel' : '') + '" type="button" data-circuit-id="' + circuit.id + '">' +
+          '<div class="circ-swatch" style="background:' + swatches[idx % swatches.length] + '"></div>' +
+          '<div class="circ-body">' +
+          '<div class="circ-name">' + circuit.name + '</div>' +
+          '<div class="circ-stops">' + stopsText + '</div>' +
+          '<div class="circ-foot"><span class="circ-price">' + formatRupees(circuit.basePrice) + '+</span><span class="circ-nights">' + circuit.defaultDays + ' days</span></div>' +
+          '</div>' +
+          '<div class="circ-check"></div>' +
+          '</button>';
+      }).join('');
+
+      document.querySelectorAll('#circuit-list .circ-card').forEach(function (card) {
+        const check = card.querySelector('.circ-check');
+        if (card.classList.contains('sel')) {
+          check.style.background = '#534AB7';
+          check.style.borderColor = '#534AB7';
+          check.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5L4.5 7.5L8.5 2.5" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        }
+        card.addEventListener('click', function () {
+          const selectedCircuitId = Number(card.dataset.circuitId);
+          const selectedCircuit = state.circuits.find(function (c) { return c.id === selectedCircuitId; });
+          window.YaatriApp.saveState({
+            selectedCircuitId: selectedCircuitId,
+            selectedCircuit: selectedCircuit ? selectedCircuit.name : ''
+          });
+          renderCircuits();
+          loadMuhurats(selectedCircuitId);
+        });
+      });
+    }
+
+    function renderMuhurats() {
+      const muhuratList = document.getElementById('muhurat-list');
+      const selectedMuhuratId = window.YaatriApp.loadState().selectedMuhuratId;
+      if (!state.muhurats.length) {
+        muhuratList.innerHTML = '';
+        setInlineStatus('muhurat-status', 'No muhurats available for this circuit right now.', false);
+        return;
+      }
+
+      setInlineStatus('muhurat-status', '', false);
+      muhuratList.innerHTML = state.muhurats.map(function (muhurat) {
+        const level = normalizeSignificance(muhurat.significance);
+        const selectedClass = selectedMuhuratId === muhurat.id ? ' sel-best' : '';
+        const label = formatDateRange(muhurat.startDate, muhurat.endDate);
+        return '<button class="muh-card ' + level + selectedClass + '" type="button" data-muhurat-id="' + muhurat.id + '">' +
+          '<div class="muh-top"><div><div class="muh-date">' + label + '</div><div class="muh-tithi">' + (muhurat.tithi || '') + '</div></div><span class="badge badge-' + level + '">' + (muhurat.significance || 'Average') + '</span></div>' +
+          '<div class="muh-reason">' + (muhurat.reason || 'Auspicious option for this circuit.') + '</div>' +
+          '</button>';
+      }).join('');
+
+      document.querySelectorAll('#muhurat-list .muh-card').forEach(function (card) {
+        card.addEventListener('click', function () {
+          const selectedId = Number(card.dataset.muhuratId);
+          const selected = state.muhurats.find(function (m) { return m.id === selectedId; });
+          if (!selected) {
+            return;
+          }
+          window.YaatriApp.saveState({
+            selectedMuhuratId: selected.id,
+            selectedMuhurat: formatDateRange(selected.startDate, selected.endDate),
+            selectedStartDate: selected.startDate,
+            selectedEndDate: selected.endDate
+          });
+          renderMuhurats();
+        });
+      });
+    }
+
+    async function loadSankalps() {
+      try {
+        state.sankalps = await window.YaatriApp.api.getSankalps();
+        const current = window.YaatriApp.getSankalpMetaByCode(appState.selectedIntention);
+        const match = state.sankalps.find(function (s) { return s.id === current.id; }) || current;
+        document.getElementById('intent-name').textContent = match.title;
+        document.getElementById('intent-sub').textContent = match.description;
+        document.getElementById('circuit-hint').textContent = 'Recommended for ' + match.title;
+        window.YaatriApp.saveState({ selectedSankalpId: match.id });
+      } catch (error) {
+        const fallback = window.YaatriApp.getSankalpMetaByCode(appState.selectedIntention);
+        document.getElementById('intent-name').textContent = fallback.title;
+        document.getElementById('intent-sub').textContent = fallback.description;
+        document.getElementById('circuit-hint').textContent = 'Recommended for ' + fallback.title;
+      }
+    }
+
+    async function loadCircuits() {
+      try {
+        setInlineStatus('circuit-status', 'Loading circuits from backend...', false);
+        const s = window.YaatriApp.loadState();
+        const sankalpId = s.selectedSankalpId || window.YaatriApp.getSankalpMetaByCode(s.selectedIntention).id;
+        state.circuits = await window.YaatriApp.api.getCircuits(sankalpId);
+        renderCircuits();
+
+        let selectedCircuitId = s.selectedCircuitId;
+        const selectedExists = state.circuits.some(function (circuit) { return circuit.id === selectedCircuitId; });
+        if (!selectedExists && state.circuits.length) {
+          selectedCircuitId = state.circuits[0].id;
+          window.YaatriApp.saveState({
+            selectedCircuitId: selectedCircuitId,
+            selectedCircuit: state.circuits[0].name
+          });
+        }
+
+        renderCircuits();
+        if (selectedCircuitId) {
+          await loadMuhurats(selectedCircuitId);
+        }
+      } catch (error) {
+        state.circuits = [];
+        renderCircuits();
+        setInlineStatus('circuit-status', error.message || 'Unable to load circuits.', true);
+      }
+    }
+
+    async function loadMuhurats(circuitId) {
+      try {
+        setInlineStatus('muhurat-status', 'Loading muhurats from backend...', false);
+        state.muhurats = await window.YaatriApp.api.getMuhurats(circuitId);
+        const s = window.YaatriApp.loadState();
+        const selectedExists = state.muhurats.some(function (muhuratsItem) { return muhuratsItem.id === s.selectedMuhuratId; });
+        if (!selectedExists && state.muhurats.length) {
+          const first = state.muhurats[0];
+          window.YaatriApp.saveState({
+            selectedMuhuratId: first.id,
+            selectedMuhurat: formatDateRange(first.startDate, first.endDate),
+            selectedStartDate: first.startDate,
+            selectedEndDate: first.endDate
+          });
+        }
+        renderMuhurats();
+      } catch (error) {
+        state.muhurats = [];
+        renderMuhurats();
+        setInlineStatus('muhurat-status', error.message || 'Unable to load muhurats.', true);
+      }
+    }
+
+    function setDurationSelection(value) {
+      document.querySelectorAll('#duration-wrap .chip-plain').forEach(function (chip) {
+        chip.classList.toggle('on', chip.textContent.trim() === value);
+      });
+      window.YaatriApp.saveState({ duration: value });
+    }
+
+    function setBudgetSelection(value) {
+      document.querySelectorAll('#budget-wrap .chip-plain').forEach(function (chip) {
+        chip.classList.toggle('on', chip.textContent.trim() === value);
+      });
+      window.YaatriApp.saveState({ budget: value });
+    }
+
+    function paintTravellerState() {
+      document.getElementById('wiz-group').textContent = String(state.groupSize);
+      document.getElementById('wiz-senior-yes').className = 'toggle-opt' + (state.senior ? ' on-yes' : '');
+      document.getElementById('wiz-senior-no').className = 'toggle-opt' + (!state.senior ? ' on-no' : '');
+      document.querySelectorAll('#wiz-mobility .chip').forEach(function (chip) {
+        chip.className = 'chip' + (state.mobility.has(chip.dataset.chip) ? ' on' : '');
+      });
+      window.YaatriApp.saveState({ groupSize: state.groupSize, senior: state.senior, mobility: Array.from(state.mobility) });
+    }
+
+    function deriveEmail(profile, phone) {
+      const normalizedPhone = String(phone || '').replace(/[^0-9]/g, '').slice(-10);
+      if (normalizedPhone.length >= 6) {
+        return 'pilgrim' + normalizedPhone + '@yaatri.local';
+      }
+      if (profile && profile.name) {
+        const slug = slugify(profile.name);
+        if (slug) {
+          return slug + '@yaatri.local';
+        }
+      }
+      return 'pilgrim@yaatri.local';
+    }
+
+    async function submitBooking() {
+      const s = window.YaatriApp.loadState();
+      if (!s.selectedSankalpId || !s.selectedCircuitId || !s.selectedMuhuratId || !s.selectedStartDate || !s.selectedEndDate) {
+        throw new Error('Please select a circuit and muhurat before submitting.');
+      }
+
+      const contextText = document.getElementById('context-input').value.trim();
+      const dietaryCode = Array.isArray(s.diet) && s.diet.length ? s.diet[0] : 'diet-satvik';
+
+      const bookingPayload = {
+        sankalpId: s.selectedSankalpId,
+        customSankalp: undefined,
+        circuitId: s.selectedCircuitId,
+        muhuratId: s.selectedMuhuratId,
+        startDate: s.selectedStartDate,
+        endDate: s.selectedEndDate,
+        groupSize: s.groupSize || 1,
+        hasSenior: !!s.senior,
+        mobilityNeeds: (s.mobility || ['mob-none']).map(function (code) { return mobilityLabels[code] || code; }),
+        dietaryPreference: dietLabels[dietaryCode] || 'Satvik',
+        specialRequests: contextText || undefined,
+        userEmail: deriveEmail(s.profile, s.profile && s.profile.phone),
+        userPhone: s.profile && s.profile.phone ? s.profile.phone : undefined,
+        userContext: contextText || undefined,
+        language: s.language || 'bi'
+      };
+
+      const booking = await window.YaatriApp.api.createBooking(bookingPayload);
+      window.YaatriApp.saveState({ backendBookingId: booking.id });
+      await window.YaatriApp.api.submitBooking(booking.id);
+      return booking.id;
+    }
+
+    document.getElementById('wiz-back').addEventListener('click', function () {
+      setWizardError('');
+      showStep(state.currentStep - 1);
+    });
+
+    document.getElementById('wiz-skip').addEventListener('click', function () {
+      setWizardError('');
+      showStep(state.currentStep + 1);
+    });
+
+    ctaButton.addEventListener('click', async function () {
+      setWizardError('');
+      if (state.currentStep < steps.length - 1) {
+        showStep(state.currentStep + 1);
+        return;
+      }
+
+      if (state.submitting) {
+        return;
+      }
+
+      try {
+        state.submitting = true;
+        ctaButton.disabled = true;
+        ctaButton.textContent = 'Submitting...';
+        const bookingId = await submitBooking();
+        ctaButton.textContent = 'Plan sent to Meera';
+        document.getElementById('wizard-sub').textContent = 'Booking #' + bookingId + ' confirmed. Meera will respond in about 2 hours.';
+      } catch (error) {
+        state.submitting = false;
+        ctaButton.disabled = false;
+        ctaButton.textContent = 'Send to Meera ->';
+        setWizardError(error.message || 'Failed to submit booking. Please try again.');
       }
     });
 
@@ -298,78 +587,40 @@
       window.YaatriApp.gotoPage('yaatri_welcome_intention_v2.html');
     });
 
+    document.getElementById('context-input').value = appState.userContext || '';
+    document.getElementById('context-input').addEventListener('input', function (event) {
+      window.YaatriApp.saveState({ userContext: event.target.value });
+    });
+
     document.querySelectorAll('#duration-wrap .chip-plain').forEach(function (chip) {
       chip.addEventListener('click', function () {
-        document.querySelectorAll('#duration-wrap .chip-plain').forEach(function (c) { c.classList.remove('on'); });
-        chip.classList.add('on');
+        setDurationSelection(chip.textContent.trim());
       });
     });
 
     document.querySelectorAll('#budget-wrap .chip-plain').forEach(function (chip) {
       chip.addEventListener('click', function () {
-        document.querySelectorAll('#budget-wrap .chip-plain').forEach(function (c) { c.classList.remove('on'); });
-        chip.classList.add('on');
+        setBudgetSelection(chip.textContent.trim());
       });
     });
-
-    document.querySelectorAll('.circ-card').forEach(function (card) {
-      card.addEventListener('click', function () {
-        document.querySelectorAll('.circ-card').forEach(function (c) {
-          c.classList.remove('sel');
-          const check = c.querySelector('.circ-check');
-          check.style.background = 'transparent';
-          check.style.borderColor = 'rgba(200,184,255,0.3)';
-          check.innerHTML = '';
-        });
-
-        card.classList.add('sel');
-        const chk = card.querySelector('.circ-check');
-        chk.style.background = '#534AB7';
-        chk.style.borderColor = '#534AB7';
-        chk.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5L4.5 7.5L8.5 2.5" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-        window.YaatriApp.saveState({ selectedCircuit: card.dataset.circuit });
-      });
-    });
-
-    document.querySelectorAll('.muh-card').forEach(function (card) {
-      card.addEventListener('click', function () {
-        document.querySelectorAll('.muh-card').forEach(function (c) { c.classList.remove('sel-best'); });
-        card.classList.add('sel-best');
-        window.YaatriApp.saveState({ selectedMuhurat: card.dataset.muhurat });
-      });
-    });
-
-    let wizGroup = appState.groupSize || 3;
-    let wizSenior = typeof appState.senior === 'boolean' ? appState.senior : true;
-    const wizMobility = new Set(appState.mobility || ['mob-none']);
-
-    function paintTravellerState() {
-      document.getElementById('wiz-group').textContent = String(wizGroup);
-      document.getElementById('wiz-senior-yes').className = 'toggle-opt' + (wizSenior ? ' on-yes' : '');
-      document.getElementById('wiz-senior-no').className = 'toggle-opt' + (!wizSenior ? ' on-no' : '');
-      document.querySelectorAll('#wiz-mobility .chip').forEach(function (chip) {
-        chip.className = 'chip' + (wizMobility.has(chip.dataset.chip) ? ' on' : '');
-      });
-      window.YaatriApp.saveState({ groupSize: wizGroup, senior: wizSenior, mobility: Array.from(wizMobility) });
-    }
 
     document.getElementById('wiz-minus').addEventListener('click', function () {
-      wizGroup = Math.max(1, wizGroup - 1);
+      state.groupSize = Math.max(1, state.groupSize - 1);
       paintTravellerState();
     });
 
     document.getElementById('wiz-plus').addEventListener('click', function () {
-      wizGroup = Math.min(8, wizGroup + 1);
+      state.groupSize = Math.min(8, state.groupSize + 1);
       paintTravellerState();
     });
 
     document.getElementById('wiz-senior-yes').addEventListener('click', function () {
-      wizSenior = true;
+      state.senior = true;
       paintTravellerState();
     });
 
     document.getElementById('wiz-senior-no').addEventListener('click', function () {
-      wizSenior = false;
+      state.senior = false;
       paintTravellerState();
     });
 
@@ -377,38 +628,34 @@
       chip.addEventListener('click', function () {
         const id = chip.dataset.chip;
         if (id === 'mob-none') {
-          wizMobility.clear();
-          wizMobility.add('mob-none');
+          state.mobility.clear();
+          state.mobility.add('mob-none');
         } else {
-          wizMobility.delete('mob-none');
-          if (wizMobility.has(id)) {
-            wizMobility.delete(id);
+          state.mobility.delete('mob-none');
+          if (state.mobility.has(id)) {
+            state.mobility.delete(id);
           } else {
-            wizMobility.add(id);
+            state.mobility.add(id);
           }
-          if (wizMobility.size === 0) {
-            wizMobility.add('mob-none');
+          if (state.mobility.size === 0) {
+            state.mobility.add('mob-none');
           }
         }
         paintTravellerState();
       });
     });
 
-    const intentionLabels = {
-      c1: ['Ancestral rites', 'Pitru tarpan, shraddha, pind daan for departed family'],
-      c2: ['Darshan & devotion', 'Temple visits, puja, abhishek'],
-      c3: ['Mannat & fulfilment', 'Completion of a vow made to the divine'],
-      c4: ['Spiritual seeking', 'Meditation retreats, satsang, inner pilgrimage'],
-      c5: ['Festival & Kumbh', 'Maha Kumbh, Navratri, Karthik Purnima circuits'],
-      c6: ['Char Dham Yatra', 'Badrinath, Kedarnath, Gangotri, Yamunotri']
-    };
-    const iLabel = intentionLabels[appState.selectedIntention] || intentionLabels.c2;
-    document.getElementById('intent-name').textContent = iLabel[0];
-    document.getElementById('intent-sub').textContent = iLabel[1];
-
     paintTravellerState();
+    setDurationSelection(appState.duration || '5-7 days');
+    setBudgetSelection(appState.budget || 'Rs15k-30k');
     renderProgress();
     showStep(0);
+
+    (async function initWizard() {
+      await loadSankalps();
+      await loadCircuits();
+      refreshReview();
+    })();
   </script>
 </body>
 </html>

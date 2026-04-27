@@ -1,0 +1,38 @@
+{
+  "name": "yatri",
+  "version": "1.0.0",
+  "description": "Yaatri - Pilgrimage Booking Backend API",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "npx ts-node --skip-project prisma/seed.ts",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio"
+  },
+  "keywords": [
+    "pilgrimage",
+    "booking",
+    "api",
+    "next.js"
+  ],
+  "author": "Yaatri Team",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "prisma": "^6.19.3",
+    "ts-node": "latest",
+    "typescript": "latest"
+  }
+}
